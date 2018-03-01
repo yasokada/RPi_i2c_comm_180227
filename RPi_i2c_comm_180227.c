@@ -6,6 +6,7 @@
 
 /*
  * v0.7 Mar. 01, 2018
+ *   - add [BOOL_ACK], [BOOL_NAK]
  *   - add i2c_sendSlaveAddress()
  * v0.6 Mar. 01, 2018
  *   - add i2c_setStopCondition()
@@ -34,6 +35,9 @@
 
 #define GPIO_SDA (19) // Pin# 35
 #define GPIO_SCL (26) // Pin# 37
+
+#define BOOL_ACK (false)
+#define BOOL_NAK (true)
 
 void myDelay(void)
 {
