@@ -100,29 +100,29 @@ void i2c_sendSlaveAddress(int address_7bit, bool bfRead)
     // just in case
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
-	// 1. slave address
+    // 1. slave address
     for(loop=0; loop<7; loop++) { // 7bit
         bitVal = (slvAdr & 0x40);
         gpio_setLevel(GPIO_SCL, GPIO_LOW);
         if (bitVal) {
             gpio_setLevel(GPIO_SDA, GPIO_HIGH);
-		} else {
+        } else {
             gpio_setLevel(GPIO_SDA, GPIO_LOW);
-		}
-		myDelay();
+        }
+        myDelay();
         gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-		myDelay();
-		slvAdr <<= 1;
-	}
+        myDelay();
+        slvAdr <<= 1;
+    }
 
-	// 2. Read/Write-bit
+    // 2. Read/Write-bit
     gpio_setLevel(GPIO_SCL, GPIO_LOW);
-	if (bfRead) {
+    if (bfRead) {
         gpio_setLevel(GPIO_SDA, GPIO_HIGH);
-	} else {
+    } else {
         gpio_setLevel(GPIO_SDA, GPIO_LOW);
-	}
-	myDelay();
+    }
+    myDelay();
     gpio_setLevel(GPIO_SCL, GPIO_HIGH);
     myDelay();
 }
@@ -136,14 +136,14 @@ void i2c_sendData(char dataCode)
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
     for(loop=0; loop<8; loop++) { // 8bit
-	    bitVal = (dataCode & 0x80);
+        bitVal = (dataCode & 0x80);
         gpio_setLevel(GPIO_SCL, GPIO_LOW);
         if (bitVal) {
             gpio_setLevel(GPIO_SDA, GPIO_HIGH);
-		} else {
+        } else {
             gpio_setLevel(GPIO_SDA, GPIO_LOW);
-		}
-		myDelay();
+        }
+        myDelay();
         gpio_setLevel(GPIO_SCL, GPIO_HIGH);
         myDelay();
         dataCode <<= 1;
@@ -152,18 +152,18 @@ void i2c_sendData(char dataCode)
 
 bool i2c_isACK(void)
 {
-	int pinlvl; // pin level
+    int pinlvl; // pin level
 
-	gpio_setLevel(GPIO_SCL, GPIO_LOW);
-	gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
-	myDelay();
-	gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-	pinlvl = gpio_getLevel(GPIO_SDA);
-	myDelay();
-	
-	// TODO: 0m > change direction to OUT
+    gpio_setLevel(GPIO_SCL, GPIO_LOW);
+    gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
+    myDelay();
+    gpio_setLevel(GPIO_SCL, GPIO_HIGH);
+    pinlvl = gpio_getLevel(GPIO_SDA);
+    myDelay();
 
-	return (pinlvl == BOOL_ACK);
+    // TODO: 0m > change direction to OUT
+
+    return (pinlvl == BOOL_ACK);
 }
 
 void test_clockout_ioin(void)
@@ -191,17 +191,17 @@ void test_clockout_ioin(void)
 
 int main()
 {
-	int slvAdr = 0x44; // Slave address
-	
-	//test_clockout_ioin();
+    int slvAdr = 0x44; // Slave address
+
+    //test_clockout_ioin();
 
     i2c_setup();
     i2c_setStartCondition();
     i2c_sendSlaveAddress(slvAdr, /*bfRead=*/false);
     
     if (i2c_isACK()) {
-		printf("ACK\n");
-	};
+        printf("ACK\n");
+    };
 
     i2c_setStopCondition();
     i2c_teardown();
