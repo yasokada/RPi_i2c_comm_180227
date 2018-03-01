@@ -6,6 +6,7 @@
 
 /*
  * v0.7 Mar. 01, 2018
+ *   - add i2c_isACK()
  *   - add [BOOL_ACK], [BOOL_NAK]
  *   - add i2c_sendSlaveAddress()
  * v0.6 Mar. 01, 2018
@@ -125,6 +126,22 @@ void i2c_sendSlaveAddress(int address_7bit, bool bfRead)
     myDelay();
 }
 
+bool i2c_isACK(void)
+{
+	int pinlvl; // pin level
+
+	gpio_setLevel(GPIO_SCL, GPIO_LOW);
+	gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
+	myDelay();
+	gpio_setLevel(GPIO_SCL, GPIO_HIGH);
+	pinlvl = gpio_getLevel(GPIO_SDA);
+	myDelay();
+	
+	// TODO: 0m > change direction to OUT
+
+	return (pinlvl == BOOL_ACK);
+}
+
 void test_clockout_ioin(void)
 {
     int loop;
@@ -151,10 +168,16 @@ void test_clockout_ioin(void)
 int main()
 {
 	int slvAdr = 0x44; // Slave address
+	
+	//test_clockout_ioin();
 
     i2c_setup();
     i2c_setStartCondition();
     i2c_sendSlaveAddress(slvAdr, /*bfRead=*/false);
+    
+    if (i2c_isACK()) {
+		printf("ACK\n");
+	};
 
     i2c_setStopCondition();
     i2c_teardown();
