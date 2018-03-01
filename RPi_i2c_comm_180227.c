@@ -6,6 +6,7 @@
 
 /*
  * v0.7 Mar. 01, 2018
+ *   - add i2c_sendData()
  *   - add i2c_isACK()
  *   - add [BOOL_ACK], [BOOL_NAK]
  *   - add i2c_sendSlaveAddress()
@@ -124,6 +125,29 @@ void i2c_sendSlaveAddress(int address_7bit, bool bfRead)
 	myDelay();
     gpio_setLevel(GPIO_SCL, GPIO_HIGH);
     myDelay();
+}
+
+void i2c_sendData(char dataCode)
+{
+    int loop;
+    bool bitVal;
+
+    // just in case
+    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
+
+    for(loop=0; loop<8; loop++) { // 8bit
+	    bitVal = (dataCode & 0x80);
+        gpio_setLevel(GPIO_SCL, GPIO_LOW);
+        if (bitVal) {
+            gpio_setLevel(GPIO_SDA, GPIO_HIGH);
+		} else {
+            gpio_setLevel(GPIO_SDA, GPIO_LOW);
+		}
+		myDelay();
+        gpio_setLevel(GPIO_SCL, GPIO_HIGH);
+        myDelay();
+        dataCode <<= 1;
+    }
 }
 
 bool i2c_isACK(void)
