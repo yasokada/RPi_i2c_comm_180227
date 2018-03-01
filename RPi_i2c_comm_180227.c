@@ -109,7 +109,7 @@ int main(){
     // 2. read at [GPIO05]
     gpio_setExport(5, /* bfOn=*/true);
     pinlvl = gpio_getLevel(5);
-    printf("SDA:%d\n", pinlvl);
+    printf("GPIO05:%d\n", pinlvl);
     gpio_setExport(5, /* bfOn=*/false);
 
     return 0;
