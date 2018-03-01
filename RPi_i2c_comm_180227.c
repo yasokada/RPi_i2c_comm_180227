@@ -6,6 +6,7 @@
 
 /*
  * v0.6 Mar. 01, 2018
+ *   - add i2c_setStartCondition()
  *   - move test feature to test_clockout_ioin()
  *   - add i2c_teardown()
  *   - add i2c_setup()
@@ -54,6 +55,20 @@ void i2c_teardown(void)
     gpio_setExport(GPIO_SCL, /* bfOn=*/false);
 }
 
+void i2c_setStartCondition(void)
+{
+    gpio_setLevel(GPIO_SDA, GPIO_HIGH);
+    gpio_setLevel(GPIO_SCL, GPIO_HIGH);
+    myDelay();
+    myDelay();
+    myDelay();
+    // start condition
+    gpio_setLevel(GPIO_SDA, GPIO_LOW);
+    myDelay();
+    gpio_setLevel(GPIO_SCL, GPIO_LOW);
+    myDelay();
+}
+
 void test_clockout_ioin(void)
 {
     int loop;
@@ -80,6 +95,9 @@ void test_clockout_ioin(void)
 int main()
 {
     i2c_setup();
+
+    i2c_setStartCondition();
+	
     i2c_teardown();
 
     return 0;
