@@ -6,7 +6,7 @@
 
 /*
  * v0.7 Mar. 01, 2018
- *   - add i2c_send_slaveAddress()
+ *   - add i2c_sendSlaveAddress()
  * v0.6 Mar. 01, 2018
  *   - add i2c_setStopCondition()
  *   - add i2c_setStartCondition()
@@ -83,7 +83,7 @@ void i2c_setStopCondition(void)
     myDelay();
 }
 
-void i2c_send_slaveAddress(int address_7bit, bool bfRead)
+void i2c_sendSlaveAddress(int address_7bit, bool bfRead)
 {
     int loop;
     bool bitVal;
@@ -150,7 +150,7 @@ int main()
 
     i2c_setup();
     i2c_setStartCondition();
-    i2c_send_slaveAddress(slvAdr, /*bfRead=*/false);
+    i2c_sendSlaveAddress(slvAdr, /*bfRead=*/false);
 
     i2c_setStopCondition();
     i2c_teardown();
