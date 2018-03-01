@@ -37,8 +37,8 @@
 #define GPIO_SDA (19) // Pin# 35
 #define GPIO_SCL (26) // Pin# 37
 
-#define BOOL_ACK (false)
-#define BOOL_NAK (true)
+#define BOOL_ACK (0)
+#define BOOL_NAK (1)
 
 void myDelay(void)
 {
