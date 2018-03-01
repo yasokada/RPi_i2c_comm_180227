@@ -6,6 +6,15 @@
 #include <stdbool.h>
 #include <string.h>
 
+/*
+ * v0.1 Mar. 01, 2018
+ *   - add gpio_setDirection()
+ *   - add gpio_getLevel()
+ *   - add gpio_setLevel()
+ *   - add gpio_setExport()
+ *   - add s_zbuf[]
+ */
+
 
 // 12345678901234567890123456789012
 // /sys/class/gpio/gpioxx/direction
