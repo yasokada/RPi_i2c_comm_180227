@@ -6,6 +6,8 @@
 
 /*
  * v0.6 Mar. 01, 2018
+ *   - add i2c_teardown()
+ *   - add i2c_setup()
  *   - add myDelay()
  * v0.5 Mar. 01, 2018
  *   - move functions related to GPIO to [gpio_handle_180301.c]
@@ -33,10 +35,32 @@ void myDelay(void)
     Wait_about200usec();
 }
 
+void i2c_setup(void)
+{
+    gpio_setExport(GPIO_SCL, /* bfOn=*/true);
+    gpio_setExport(GPIO_SDA, /* bfOn=*/true);
+
+    gpio_setDirection(GPIO_SCL, /* bfOut=*/true);
+    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
+}
+
+void i2c_teardown(void)
+{
+    gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
+    gpio_setDirection(GPIO_SCL, /* bfOut=*/false);
+
+    gpio_setExport(GPIO_SDA, /* bfOn=*/false);	
+    gpio_setExport(GPIO_SCL, /* bfOn=*/false);
+}
+
 int main(){
     int loop;
     int pinlvl; // pin level
 
+#if 1 //
+    i2c_setup();
+    i2c_teardown();
+#else
     // 1. output clock at [GPIO_SCL]
     gpio_setExport(GPIO_SCL, /* bfOn=*/true);
     gpio_setDirection(GPIO_SCL, /* bfOut=*/true);        
@@ -53,6 +77,7 @@ int main(){
     pinlvl = gpio_getLevel(5);
     printf("GPIO05:%d\n", pinlvl);
     gpio_setExport(5, /* bfOn=*/false);
+#endif
 
     return 0;
 }
