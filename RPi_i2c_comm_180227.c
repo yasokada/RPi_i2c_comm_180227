@@ -5,6 +5,8 @@
 #include "wait_msec_nsec_180301.h"
 
 /*
+ * v0.6 Mar. 01, 2018
+ *   - add myDelay()
  * v0.5 Mar. 01, 2018
  *   - move functions related to GPIO to [gpio_handle_180301.c]
  * v0.4 Mar. 01, 2018
@@ -26,6 +28,11 @@
 #define GPIO_SDA (19) // Pin# 35
 #define GPIO_SCL (26) // Pin# 37
 
+void myDelay(void)
+{
+    Wait_about200usec();
+}
+
 int main(){
     int loop;
     int pinlvl; // pin level
@@ -35,9 +42,9 @@ int main(){
     gpio_setDirection(GPIO_SCL, /* bfOut=*/true);        
     for(loop=0; loop<5; loop++) {
         gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-        Wait_about200usec();
+        myDelay();
         gpio_setLevel(GPIO_SCL, GPIO_LOW);
-        Wait_about200usec();
+        myDelay();
     }
     gpio_setExport(GPIO_SDA, /* bfOn=*/false);
 
