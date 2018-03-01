@@ -6,6 +6,7 @@
 
 /*
  * v0.6 Mar. 01, 2018
+ *   - move test feature to test_clockout_ioin()
  *   - add i2c_teardown()
  *   - add i2c_setup()
  *   - add myDelay()
@@ -53,14 +54,11 @@ void i2c_teardown(void)
     gpio_setExport(GPIO_SCL, /* bfOn=*/false);
 }
 
-int main(){
+void test_clockout_ioin(void)
+{
     int loop;
     int pinlvl; // pin level
 
-#if 1 //
-    i2c_setup();
-    i2c_teardown();
-#else
     // 1. output clock at [GPIO_SCL]
     gpio_setExport(GPIO_SCL, /* bfOn=*/true);
     gpio_setDirection(GPIO_SCL, /* bfOut=*/true);        
@@ -76,8 +74,13 @@ int main(){
     gpio_setExport(5, /* bfOn=*/true);
     pinlvl = gpio_getLevel(5);
     printf("GPIO05:%d\n", pinlvl);
-    gpio_setExport(5, /* bfOn=*/false);
-#endif
+    gpio_setExport(5, /* bfOn=*/false);	
+}
+
+int main()
+{
+    i2c_setup();
+    i2c_teardown();
 
     return 0;
 }
