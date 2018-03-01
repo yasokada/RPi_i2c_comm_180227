@@ -6,6 +6,7 @@
 
 /*
  * v0.6 Mar. 01, 2018
+ *   - add i2c_setStopCondition()
  *   - add i2c_setStartCondition()
  *   - move test feature to test_clockout_ioin()
  *   - add i2c_teardown()
@@ -69,6 +70,17 @@ void i2c_setStartCondition(void)
     myDelay();
 }
 
+void i2c_setStopCondition(void)
+{
+    gpio_setLevel(GPIO_SCL, GPIO_LOW);
+    gpio_setLevel(GPIO_SDA, GPIO_LOW);
+    myDelay();
+    gpio_setLevel(GPIO_SCL, GPIO_HIGH);
+    myDelay();
+    gpio_setLevel(GPIO_SDA, GPIO_HIGH);
+    myDelay();
+}
+
 void test_clockout_ioin(void)
 {
     int loop;
@@ -97,7 +109,9 @@ int main()
     i2c_setup();
 
     i2c_setStartCondition();
-	
+
+    i2c_setStopCondition();
+
     i2c_teardown();
 
     return 0;
