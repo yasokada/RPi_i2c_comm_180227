@@ -196,14 +196,35 @@ int main()
     //test_clockout_ioin();
 
     i2c_setup();
+    // write header
     i2c_setStartCondition();
     i2c_sendSlaveAddress(slvAdr, /*bfRead=*/false);
-    
+    if (i2c_isACK()) {
+        printf("ACK\n");
+    };
+    // send command
+    i2c_sendData(0x2C); // 0x2C: arbitrary
+    if (i2c_isACK()) {
+        printf("ACK\n");
+    };
+    i2c_sendData(0x06); // 0x06: arbitrary
+    if (i2c_isACK()) {
+        printf("ACK\n");
+    };
+    i2c_setStopCondition();
+
+    // wait for measurement
+    Wait_millisecond(15); // 15: arbitrary
+
+    // read header
+    i2c_setStartCondition();
+    i2c_sendSlaveAddress(slvAdr, /*bfRead=*/true);
+    // TODO:0a > fail to get [ACK]
     if (i2c_isACK()) {
         printf("ACK\n");
     };
 
-    i2c_setStopCondition();
+
     i2c_teardown();
 
     return 0;
