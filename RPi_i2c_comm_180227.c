@@ -63,18 +63,18 @@ void gpio_setLevel(int index, bool bfHigh)
 
 int gpio_getLevel(int index)
 {
-	int rfd;
-	char code;
-	
-    sprintf(s_zbuf, "/sys/class/gpio/gpio%d/value", index);
-	rfd = open(s_zbuf, O_RDONLY);
-	if (rfd == -1) {
-		return 0; // return as Low level
-	}
-	read(rfd, &code, 1);
-	close(rfd);
+    int rfd;
+    char code;
 
-	return code == '1';
+    sprintf(s_zbuf, "/sys/class/gpio/gpio%d/value", index);
+    rfd = open(s_zbuf, O_RDONLY);
+    if (rfd == -1) {
+        return 0; // return as Low level
+    }
+    read(rfd, &code, 1);
+    close(rfd);
+    
+    return code == '1';
 }
 
 void gpio_setDirection(int index, bool bfOut)
@@ -92,26 +92,26 @@ void gpio_setDirection(int index, bool bfOut)
 }
 
 int main(){
-	int loop;
-	int pinlvl; // pin level
+    int loop;
+    int pinlvl; // pin level
 
-	// 1. output clock at [GPIO_SCL]
+    // 1. output clock at [GPIO_SCL]
     gpio_setExport(GPIO_SCL, /* bfOn=*/true);
     gpio_setDirection(GPIO_SCL, /* bfOut=*/true);        
     for(loop=0; loop<5; loop++) {
-		gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-		Wait_about200usec();
-		gpio_setLevel(GPIO_SCL, GPIO_LOW);
-		Wait_about200usec();
-	}
+        gpio_setLevel(GPIO_SCL, GPIO_HIGH);
+        Wait_about200usec();
+        gpio_setLevel(GPIO_SCL, GPIO_LOW);
+        Wait_about200usec();
+    }
     gpio_setExport(GPIO_SDA, /* bfOn=*/false);
 
-	// 2. read at [GPIO05]
-	gpio_setExport(5, /* bfOn=*/true);
-	pinlvl = gpio_getLevel(5);
-	printf("SDA:%d\n", pinlvl);
-	gpio_setExport(5, /* bfOn=*/false);    
+    // 2. read at [GPIO05]
+    gpio_setExport(5, /* bfOn=*/true);
+    pinlvl = gpio_getLevel(5);
+    printf("SDA:%d\n", pinlvl);
+    gpio_setExport(5, /* bfOn=*/false);
 
-	return 0;
+    return 0;
 }
 
