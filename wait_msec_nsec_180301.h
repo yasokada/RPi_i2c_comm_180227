@@ -1,5 +1,5 @@
-#ifndef __WAIT_MSEC_NSEC_180301_H
-#define __WAIT_MSEC_NSEC_180301_H
+#ifndef WAIT_MSEC_NSEC_180301_H
+#define WAIT_MSEC_NSEC_180301_H
 
 void Wait_millisecond(int wait_msec);
 //void Wait_nanosecond(int wait_nsec);
