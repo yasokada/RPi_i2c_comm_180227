@@ -6,6 +6,7 @@
 
 /*
  * v0.8 Mar. 02, 2018
+ *   - refactor > i2c_readData() > for() does not have DIR out
  *   - i2c_readData() returns [char] type
  *   - i2c_readData() removes [dstPtr] arg
  *   - refactor > rename to i2c_sendStopCondition()
@@ -203,11 +204,10 @@ char i2c_readData(bool isLast)
     char code;
     int loop;
 
+    gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
+
     code = 0;
     for (loop=0; loop<8; loop++) {
-        if (loop == 0) {
-            gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
-        }
         gpio_setLevel(GPIO_SCL, GPIO_LOW);
         myDelay();
         gpio_setLevel(GPIO_SCL, GPIO_HIGH);
