@@ -6,6 +6,7 @@
 
 /*
  * v0.8 Mar. 02, 2018
+ *   - add i2c_sendAckNak()
  *   - fix bug > i2c_isACK() did not set direction inward
  * v0.7 Mar. 01, 2018
  *   - add i2c_sendData()
@@ -150,6 +151,20 @@ void i2c_sendData(char dataCode)
         myDelay();
         dataCode <<= 1;
     }
+}
+
+void i2c_sendAckNak(bool isAck)
+{
+    gpio_setLevel(GPIO_SCL, GPIO_LOW);
+    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
+    if (isAck) {
+        gpio_setLevel(GPIO_SCL, GPIO_LOW); // ACK
+    } else {
+        gpio_setLevel(GPIO_SCL, GPIO_HIGH); // NAK
+    }
+    myDelay();
+    gpio_setLevel(GPIO_SCL, GPIO_LOW);
+    myDelay();
 }
 
 bool i2c_isACK(void)
