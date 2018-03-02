@@ -6,6 +6,8 @@
 
 /*
  * v0.8 Mar. 02, 2018
+ *   - i2c_readData() returns [char] type
+ *   - i2c_readData() removes [dstPtr] arg
  *   - refactor > rename to i2c_sendStopCondition()
  *   - refactor > rename to i2c_sendStartCondition()
  *   - fix bug > i2c_sendAckNak() was incorrect
@@ -196,14 +198,10 @@ bool i2c_isACK(void)
     return (pinlvl == BOOL_ACK);
 }
 
-void i2c_readData(char *dstPtr, bool isLast)
+char i2c_readData(bool isLast)
 {
     char code;
     int loop;
-
-    if (dstPtr == NULL) {
-        return; // error
-    }
 
     code = 0;
     for (loop=0; loop<8; loop++) {
@@ -221,14 +219,14 @@ void i2c_readData(char *dstPtr, bool isLast)
             code <<= 1;
         }
     }
-    
-    *dstPtr = code;
-    
+        
     if (isLast) {
         i2c_sendAckNak(/* isAck=*/false);
     } else {
         i2c_sendAckNak(/* isAck=*/true);
     }
+    
+    return code;
 }
 
 void test_clockout_ioin(void)
@@ -294,7 +292,7 @@ int main(void)
         printf("ACK\n");
     };
     for(idx=0; idx<6; idx++) {
-        i2c_readData(&vals[idx], /* isLast=*/(idx==5));
+        vals[idx] = i2c_readData(/* isLast=*/(idx==5));
         printf("%d\n", vals[idx]);
     }
     i2c_sendStopCondition();
