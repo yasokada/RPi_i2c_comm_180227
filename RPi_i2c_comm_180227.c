@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "i2c_comm_180302.h"
 
 /*
  * v0.9 Mar. 02, 2018
+ *   - remove myDelay()
  *   - move i2c_XXX() to [i2c_comm_180302.c]
  * 	 - gpio_handle_180301.h: has gpio_isHigh()
  *     + instead of gpio_getLevel()
@@ -50,17 +52,6 @@
  *   - add gpio_setHigh()
  *   - add gpio_setExport()
 */
-
-#define GPIO_SDA (19) // Pin# 35
-#define GPIO_SCL (26) // Pin# 37
-
-//#define BOOL_ACK (false)
-//#define BOOL_NAK (true)
-
-void myDelay(void)
-{
-    Wait_about200usec();
-}
 
 int main(void)
 {

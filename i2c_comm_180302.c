@@ -4,6 +4,7 @@
 
 /*
  * v0.1 2018/03/02
+ *   - has myDelay()
  *   - has i2c_XXX() moved from other source file
  */
 
@@ -14,7 +15,10 @@
 #define BOOL_ACK (false)
 #define BOOL_NAK (true)
 
-// TODO: 0m > where to define myDelay()?
+static void myDelay(void)
+{
+    Wait_about200usec();
+}
 
 void i2c_Setup(void)
 {
