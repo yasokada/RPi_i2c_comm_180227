@@ -254,7 +254,7 @@ void test_clockout_ioin(void)
     gpio_setExport(5, /* bfOn=*/false);	
 }
 
-int main()
+int main(void)
 {
     int slvAdr = 0x44; // Slave address
     char vals[10] = {0};
