@@ -3,8 +3,6 @@
 #include "wait_msec_nsec_180301.h"
 #include "i2c_comm_180302.h"
 
-#include <stdio.h> // TODO: 0m > remove
-
 /*
  * v0.1 2018/03/02
  *   - has i2c_XXX() moved from other source file
@@ -184,21 +182,22 @@ char i2c_ReadData(bool isLast)
     return code;
 }
 
+/*
 void test_clockout_ioin(void)
 {
     int loop;
     int pinlvl; // pin level
 
     // 1. output clock at [GPIO_SCL]
-    gpio_setExport(GPIO_SCL, /* bfOn=*/true);
-    gpio_setDirection(GPIO_SCL, /* bfOut=*/true);
+    gpio_setExport(GPIO_SCL, true);
+    gpio_setDirection(GPIO_SCL, true); // true=bfOut
     for(loop=0; loop<5; loop++) {
         gpio_setLevel(GPIO_SCL, GPIO_HIGH);
         myDelay();
         gpio_setLevel(GPIO_SCL, GPIO_LOW);
         myDelay();
     }
-    gpio_setExport(GPIO_SDA, /* bfOn=*/false);
+    gpio_setExport(GPIO_SDA, false);
 
     // 2. read at [GPIO05]
     gpio_setExport(5, true);
@@ -206,3 +205,4 @@ void test_clockout_ioin(void)
     printf("GPIO05:%d\n", pinlvl);
     gpio_setExport(5, false);	
 }
+*/
