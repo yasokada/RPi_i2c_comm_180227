@@ -6,6 +6,8 @@
 
 /*
  * v0.8 Mar. 02, 2018
+ *   - refactor > rename to i2c_sendStopCondition()
+ *   - refactor > rename to i2c_sendStartCondition()
  *   - fix bug > i2c_sendAckNak() was incorrect
  *   - fix bug > i2c_readData() > gpio_getLevel() had no arg
  *   - i2c_isACK() does not set GPIO_SDA direction outward
@@ -90,7 +92,7 @@ void i2c_sendStartCondition(bool withInit)
     myDelay();
 }
 
-void i2c_setStopCondition(void)
+void i2c_sendStopCondition(void)
 {
     // just in case
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
@@ -277,7 +279,7 @@ int main(void)
         printf("ACK\n");
     };
 
-    i2c_setStopCondition();
+    i2c_sendStopCondition();
 
     // wait for measurement
     Wait_millisecond(15); // 15: arbitrary
@@ -293,7 +295,7 @@ int main(void)
         printf("%d\n", vals[idx]);
     }
 
-    i2c_setStopCondition();
+    i2c_sendStopCondition();
 
     i2c_teardown();
 
