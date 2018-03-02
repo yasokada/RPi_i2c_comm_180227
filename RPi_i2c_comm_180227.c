@@ -75,7 +75,7 @@ void i2c_setStartCondition(bool withInit)
 {
     // just in case
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
-	
+
     if (withInit) {
         gpio_setLevel(GPIO_SDA, GPIO_HIGH);
         gpio_setLevel(GPIO_SCL, GPIO_HIGH);
@@ -94,7 +94,7 @@ void i2c_setStopCondition(void)
 {
     // just in case
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
-	
+
     gpio_setLevel(GPIO_SCL, GPIO_LOW);
     gpio_setLevel(GPIO_SDA, GPIO_LOW);
     myDelay();
