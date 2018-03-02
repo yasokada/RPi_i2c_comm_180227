@@ -171,10 +171,8 @@ void i2c_sendAckNak(bool isAck)
     gpio_setLevel(GPIO_SCL, GPIO_LOW);
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
     if (isAck) {
-		printf("ACK,");
         gpio_setLevel(GPIO_SDA, GPIO_LOW); // ACK
     } else {
-		printf("NAK,");
         gpio_setLevel(GPIO_SDA, GPIO_HIGH); // NAK
     }
     myDelay();
@@ -298,7 +296,6 @@ int main()
     }
 
     i2c_setStopCondition();
-
 
     i2c_teardown();
 
