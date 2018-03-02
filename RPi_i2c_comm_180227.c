@@ -6,6 +6,9 @@
 
 /*
  * v0.9 Mar. 02, 2018
+ * 	 - gpio_handle_180301.h: has gpio_isHigh()
+ *     + instead of gpio_getLevel()
+ *     + redefine [BOOL_ACL], [BOOL_NAK]
  *   - refactor > remove comments "just in case"
  * v0.8 Mar. 02, 2018 can obtain sensor data
  *   - refactor > i2c_readData() > for() does not have DIR out
@@ -52,8 +55,8 @@
 #define GPIO_SDA (19) // Pin# 35
 #define GPIO_SCL (26) // Pin# 37
 
-#define BOOL_ACK (0)
-#define BOOL_NAK (1)
+#define BOOL_ACK (false)
+#define BOOL_NAK (true)
 
 void myDelay(void)
 {
@@ -191,7 +194,7 @@ bool i2c_isACK(void)
     gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
     myDelay();
     gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-    pinlvl = gpio_getLevel(GPIO_SDA);
+    pinlvl = gpio_isHigh(GPIO_SDA);
     myDelay();
 
     return (pinlvl == BOOL_ACK);
@@ -209,7 +212,7 @@ char i2c_readData(bool isLast)
         gpio_setLevel(GPIO_SCL, GPIO_LOW);
         myDelay();
         gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-        if (gpio_getLevel(GPIO_SDA)) { // High
+        if (gpio_isHigh(GPIO_SDA)) {
             code |= 0x01;
         }
         myDelay();
@@ -245,7 +248,7 @@ void test_clockout_ioin(void)
 
     // 2. read at [GPIO05]
     gpio_setExport(5, /* bfOn=*/true);
-    pinlvl = gpio_getLevel(5);
+    pinlvl = gpio_isHigh(5);
     printf("GPIO05:%d\n", pinlvl);
     gpio_setExport(5, /* bfOn=*/false);	
 }
