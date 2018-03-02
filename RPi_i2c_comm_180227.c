@@ -42,7 +42,6 @@
  *   - add gpio_setExport()
 */
 
-
 #define GPIO_SDA (19) // Pin# 35
 #define GPIO_SCL (26) // Pin# 37
 
@@ -72,7 +71,7 @@ void i2c_teardown(void)
     gpio_setExport(GPIO_SCL, /* bfOn=*/false);
 }
 
-void i2c_setStartCondition(bool withInit)
+void i2c_sendStartCondition(bool withInit)
 {
     // just in case
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
@@ -206,7 +205,6 @@ void i2c_readData(char *dstPtr, bool isLast)
 
     code = 0;
     for (loop=0; loop<8; loop++) {
-        // gpio_setLevel(GPIO_SCL, GPIO_LOW);
         if (loop == 0) {
             gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
         }
@@ -264,7 +262,7 @@ int main(void)
 
     i2c_setup();
     // write header
-    i2c_setStartCondition(/* withInit=*/true);
+    i2c_sendStartCondition(/* withInit=*/true);
     i2c_sendSlaveAddress(slvAdr, /*bfRead=*/false);
     if (i2c_isACK()) {
         printf("ACK\n");
@@ -285,7 +283,7 @@ int main(void)
     Wait_millisecond(15); // 15: arbitrary
 
     // read header
-    i2c_setStartCondition(/* withInit=*/false);
+    i2c_sendStartCondition(/* withInit=*/false);
     i2c_sendSlaveAddress(slvAdr, /*bfRead=*/true);
     if (i2c_isACK()) {
         printf("ACK\n");
