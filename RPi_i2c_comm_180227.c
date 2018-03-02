@@ -6,6 +6,8 @@
 
 /*
  * v0.8 Mar. 02, 2018
+ *   - fix bug > i2c_readData() > gpio_getLevel() had no arg
+ *   - i2c_isACK() does not set GPIO_SDA direction outward
  *   - i2c_setStartCondition() has [withInit] argument
  *   - add i2c_readData()
  *   - add i2c_sendAckNak()
@@ -188,9 +190,6 @@ bool i2c_isACK(void)
     pinlvl = gpio_getLevel(GPIO_SDA);
     myDelay();
 
-    // TODO: 0m > keep IN or set OUT
-    //gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
-
     return (pinlvl == BOOL_ACK);
 }
 
@@ -212,16 +211,17 @@ void i2c_readData(char *dstPtr, bool isLast)
         gpio_setLevel(GPIO_SCL, GPIO_LOW);
         myDelay();
         gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-        if (gpio_getLevel()) { // High
+        if (gpio_getLevel(GPIO_SDA)) { // High
             code |= 0x01;
         }
         myDelay();
         if (loop < (8-1)) { // other than last digit
-            code << 1;
+            code <<= 1;
         }
     }
+    
     *dstPtr = code;
-
+    
     if (isLast) {
         i2c_sendAckNak(/* isAck=*/true);
     } else {
@@ -255,7 +255,7 @@ void test_clockout_ioin(void)
 int main()
 {
     int slvAdr = 0x44; // Slave address
-    char vals[10];
+    char vals[10] = {0};
     int idx;
 
     //test_clockout_ioin();
@@ -285,16 +285,12 @@ int main()
     // read header
     i2c_setStartCondition(/* withInit=*/false);
     i2c_sendSlaveAddress(slvAdr, /*bfRead=*/true);
-
     if (i2c_isACK()) {
         printf("ACK\n");
     };
-
-	//myDelay(); i2c_teardown(); exit(1); // DEBUG
-    
     for(idx=0; idx<6; idx++) {
         i2c_readData(&vals[idx], /* isLast=*/(idx==5));
-        printf("%c\n", vals[idx]);
+        printf("%d\n", vals[idx]);
     }
 
     i2c_setStopCondition();
