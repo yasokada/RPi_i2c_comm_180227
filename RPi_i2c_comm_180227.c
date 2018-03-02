@@ -188,16 +188,16 @@ void i2c_sendAckNak(bool isAck)
 
 bool i2c_isACK(void)
 {
-    int pinlvl; // pin level
+    bool pinIsH;
 
     gpio_setLevel(GPIO_SCL, GPIO_LOW);
     gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
     myDelay();
     gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-    pinlvl = gpio_isHigh(GPIO_SDA);
+    pinIsH = gpio_isHigh(GPIO_SDA);
     myDelay();
 
-    return (pinlvl == BOOL_ACK);
+    return (pinIsH == BOOL_ACK);
 }
 
 char i2c_readData(bool isLast)
