@@ -14,6 +14,8 @@
 #define BOOL_ACK (false)
 #define BOOL_NAK (true)
 
+// TODO: 0m > where to define myDelay()?
+
 void i2c_Setup(void)
 {
     gpio_setExport(GPIO_SCL, /* bfOn=*/true);
