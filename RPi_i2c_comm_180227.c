@@ -179,7 +179,7 @@ bool i2c_isACK(void)
     pinlvl = gpio_getLevel(GPIO_SDA);
     myDelay();
 
-	// TODO: 0m > keep IN or set OUT
+    // TODO: 0m > keep IN or set OUT
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
     return (pinlvl == BOOL_ACK);
@@ -267,17 +267,11 @@ int main()
         printf("ACK\n");
     };
     
-    // comment out for repeated start condition
-    // i2c_setStopCondition();
-
     // repeated start condition
     i2c_setStartCondition();
 
     // wait for measurement
     Wait_millisecond(15); // 15: arbitrary
-
-	// set OUT for the uC to handle
-	//gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
     // read header
     i2c_setStartCondition();
