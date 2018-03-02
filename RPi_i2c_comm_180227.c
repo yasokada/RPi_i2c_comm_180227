@@ -163,6 +163,7 @@ bool i2c_isACK(void)
     pinlvl = gpio_getLevel(GPIO_SDA);
     myDelay();
 
+	// TODO: 0m > keep IN or set OUT
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
     return (pinlvl == BOOL_ACK);
@@ -221,10 +222,11 @@ int main()
     // read header
     i2c_setStartCondition();
     i2c_sendSlaveAddress(slvAdr, /*bfRead=*/true);
-    // TODO:0a > fail to get [ACK]
     if (i2c_isACK()) {
         printf("ACK\n");
     };
+
+    i2c_setStopCondition();
 
 
     i2c_teardown();
