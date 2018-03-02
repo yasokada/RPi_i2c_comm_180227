@@ -5,7 +5,9 @@
 #include "wait_msec_nsec_180301.h"
 
 /*
- * v0.8 Mar. 02, 2018
+ * v0.9 Mar. 02, 2018
+ *   - refactor > remove comments "just in case"
+ * v0.8 Mar. 02, 2018 can obtain sensor data
  *   - refactor > i2c_readData() > for() does not have DIR out
  *   - i2c_readData() returns [char] type
  *   - i2c_readData() removes [dstPtr] arg
@@ -78,7 +80,6 @@ void i2c_teardown(void)
 
 void i2c_sendStartCondition(bool withInit)
 {
-    // just in case
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
     if (withInit) {
@@ -97,7 +98,6 @@ void i2c_sendStartCondition(bool withInit)
 
 void i2c_sendStopCondition(void)
 {
-    // just in case
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
     gpio_setLevel(GPIO_SCL, GPIO_LOW);
@@ -117,7 +117,6 @@ void i2c_sendSlaveAddress(int address_7bit, bool bfRead)
 
     slvAdr = address_7bit;
 
-    // just in case
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
     // 1. slave address
@@ -152,7 +151,6 @@ void i2c_sendData(char dataCode)
     int loop;
     bool bitVal;
 
-    // just in case
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
     for(loop=0; loop<8; loop++) { // 8bit
