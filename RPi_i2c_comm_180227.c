@@ -6,6 +6,7 @@
 
 /*
  * v0.8 Mar. 02, 2018
+ *   - add i2c_readData()
  *   - add i2c_sendAckNak()
  *   - fix bug > i2c_isACK() did not set direction inward
  * v0.7 Mar. 01, 2018
@@ -184,6 +185,40 @@ bool i2c_isACK(void)
     return (pinlvl == BOOL_ACK);
 }
 
+void i2c_readData(char *dstPtr, bool isLast)
+{
+    char code;
+    int loop;
+
+    if (dstPtr == NULL) {
+        return; // error
+    }
+
+    code = 0;
+    for (loop=0; loop<8; loop++) {
+        gpio_setLevel(GPIO_SCL, GPIO_LOW);
+        if (loop == 0) {
+            gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
+        }
+        myDelay();
+        gpio_setLevel(GPIO_SCL, GPIO_HIGH);
+        if (gpio_getLevel()) { // High
+            code |= 0x01;
+        }
+        myDelay();
+        if (loop < (8-1)) { // other than last digit
+            code << 1;
+        }
+    }
+    *dstPtr = code;
+
+    if (isLast) {
+        i2c_sendAckNak(/* isAck=*/true);
+    } else {
+        i2c_sendAckNak(/* isAck=*/false);
+    }
+}
+
 void test_clockout_ioin(void)
 {
     int loop;
@@ -210,6 +245,8 @@ void test_clockout_ioin(void)
 int main()
 {
     int slvAdr = 0x44; // Slave address
+    char vals[10];
+    int idx;
 
     //test_clockout_ioin();
 
@@ -229,10 +266,18 @@ int main()
     if (i2c_isACK()) {
         printf("ACK\n");
     };
-    i2c_setStopCondition();
+    
+    // comment out for repeated start condition
+    // i2c_setStopCondition();
+
+    // repeated start condition
+    i2c_setStartCondition();
 
     // wait for measurement
     Wait_millisecond(15); // 15: arbitrary
+
+	// set OUT for the uC to handle
+	//gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
     // read header
     i2c_setStartCondition();
@@ -240,6 +285,11 @@ int main()
     if (i2c_isACK()) {
         printf("ACK\n");
     };
+    
+    for(idx=0; idx<6; idx++) {
+        i2c_readData(&vals[idx], /* isLast=*/(idx==5));
+        printf("%c\n", vals[idx]);
+    }
 
     i2c_setStopCondition();
 
