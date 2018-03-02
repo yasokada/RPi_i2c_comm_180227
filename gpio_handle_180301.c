@@ -7,6 +7,8 @@
 #include <string.h>
 
 /*
+ * v0.2 Mar. 02, 2018
+ *   - rename gpio_getLevel() to gpio_isHigh()
  * v0.1 Mar. 01, 2018
  *   - add gpio_setDirection()
  *   - add gpio_getLevel()
@@ -48,7 +50,7 @@ void gpio_setLevel(int index, bool bfHigh)
     close(wfd);
 }
 
-int gpio_getLevel(int index)
+bool gpio_isHigh(int index)
 {
     int rfd;
     char code;

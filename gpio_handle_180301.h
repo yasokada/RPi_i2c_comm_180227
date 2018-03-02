@@ -6,7 +6,7 @@
 
 void gpio_setExport(int index, bool bfOn);
 void gpio_setLevel(int index, bool bfHigh);
-int gpio_getLevel(int index);
+int gpio_isHigh(int index);
 void gpio_setDirection(int index, bool bfOut);
 
 #endif
