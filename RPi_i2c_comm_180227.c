@@ -71,44 +71,44 @@ int main(void)
     //test_clockout_ioin();
 
     // 1. init
-    i2c_setup();
+    i2c_Setup();
 
     // 2. start measurement
     // write header
-    i2c_sendStartCondition(/* withInit=*/true);
-    i2c_sendSlaveAddress(slvAdr, /*bfRead=*/false);
-    if (i2c_isACK()) {
+    i2c_SendStartCondition(/* withInit=*/true);
+    i2c_SendSlaveAddress(slvAdr, /*bfRead=*/false);
+    if (i2c_IsACK()) {
         printf("ACK\n");
     };
     // send command
-    i2c_sendData(0x2C); // 0x2C: arbitrary
-    if (i2c_isACK()) {
+    i2c_SendData(0x2C); // 0x2C: arbitrary
+    if (i2c_IsACK()) {
         printf("ACK\n");
     };
-    i2c_sendData(0x06); // 0x06: arbitrary
-    if (i2c_isACK()) {
+    i2c_SendData(0x06); // 0x06: arbitrary
+    if (i2c_IsACK()) {
         printf("ACK\n");
     };
-    i2c_sendStopCondition();
+    i2c_SendStopCondition();
 
     // 3. wait for measurement
     Wait_millisecond(15); // 15: arbitrary
 
     // 4. obtain data
     // read header
-    i2c_sendStartCondition(/* withInit=*/false);
-    i2c_sendSlaveAddress(slvAdr, /*bfRead=*/true);
-    if (i2c_isACK()) {
+    i2c_SendStartCondition(/* withInit=*/false);
+    i2c_SendSlaveAddress(slvAdr, /*bfRead=*/true);
+    if (i2c_IsACK()) {
         printf("ACK\n");
     };
     for(idx=0; idx<6; idx++) {
-        vals[idx] = i2c_readData(/* isLast=*/(idx==5));
+        vals[idx] = i2c_ReadData(/* isLast=*/(idx==5));
         printf("%d\n", vals[idx]);
     }
-    i2c_sendStopCondition();
+    i2c_SendStopCondition();
 
     // 5. finish
-    i2c_teardown();
+    i2c_Teardown();
 
     return 0;
 }
