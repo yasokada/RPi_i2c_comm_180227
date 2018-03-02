@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "gpio_handle_180301.h"
-#include "wait_msec_nsec_180301.h"
 
 /*
  * v0.9 Mar. 02, 2018
+ *   - move i2c_XXX() to [i2c_comm_180302.c]
  * 	 - gpio_handle_180301.h: has gpio_isHigh()
  *     + instead of gpio_getLevel()
  *     + redefine [BOOL_ACL], [BOOL_NAK]
@@ -55,202 +54,12 @@
 #define GPIO_SDA (19) // Pin# 35
 #define GPIO_SCL (26) // Pin# 37
 
-#define BOOL_ACK (false)
-#define BOOL_NAK (true)
+//#define BOOL_ACK (false)
+//#define BOOL_NAK (true)
 
 void myDelay(void)
 {
     Wait_about200usec();
-}
-
-void i2c_setup(void)
-{
-    gpio_setExport(GPIO_SCL, /* bfOn=*/true);
-    gpio_setExport(GPIO_SDA, /* bfOn=*/true);
-
-    gpio_setDirection(GPIO_SCL, /* bfOut=*/true);
-    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
-}
-
-void i2c_teardown(void)
-{
-    gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
-    gpio_setDirection(GPIO_SCL, /* bfOut=*/false);
-
-    gpio_setExport(GPIO_SDA, /* bfOn=*/false);	
-    gpio_setExport(GPIO_SCL, /* bfOn=*/false);
-}
-
-void i2c_sendStartCondition(bool withInit)
-{
-    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
-
-    if (withInit) {
-        gpio_setLevel(GPIO_SDA, GPIO_HIGH);
-        gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-        myDelay();
-        myDelay();
-        myDelay();
-    }
-    // start condition
-    gpio_setLevel(GPIO_SDA, GPIO_LOW);
-    myDelay();
-    gpio_setLevel(GPIO_SCL, GPIO_LOW);
-    myDelay();
-}
-
-void i2c_sendStopCondition(void)
-{
-    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
-
-    gpio_setLevel(GPIO_SCL, GPIO_LOW);
-    gpio_setLevel(GPIO_SDA, GPIO_LOW);
-    myDelay();
-    gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-    myDelay();
-    gpio_setLevel(GPIO_SDA, GPIO_HIGH);
-    myDelay();
-}
-
-void i2c_sendSlaveAddress(int address_7bit, bool bfRead)
-{
-    int loop;
-    bool bitVal;
-    char slvAdr;
-
-    slvAdr = address_7bit;
-
-    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
-
-    // 1. slave address
-    for(loop=0; loop<7; loop++) { // 7bit
-        bitVal = (slvAdr & 0x40);
-        gpio_setLevel(GPIO_SCL, GPIO_LOW);
-        if (bitVal) {
-            gpio_setLevel(GPIO_SDA, GPIO_HIGH);
-        } else {
-            gpio_setLevel(GPIO_SDA, GPIO_LOW);
-        }
-        myDelay();
-        gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-        myDelay();
-        slvAdr <<= 1;
-    }
-
-    // 2. Read/Write-bit
-    gpio_setLevel(GPIO_SCL, GPIO_LOW);
-    if (bfRead) {
-        gpio_setLevel(GPIO_SDA, GPIO_HIGH);
-    } else {
-        gpio_setLevel(GPIO_SDA, GPIO_LOW);
-    }
-    myDelay();
-    gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-    myDelay();
-}
-
-void i2c_sendData(char dataCode)
-{
-    int loop;
-    bool bitVal;
-
-    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
-
-    for(loop=0; loop<8; loop++) { // 8bit
-        bitVal = (dataCode & 0x80);
-        gpio_setLevel(GPIO_SCL, GPIO_LOW);
-        if (bitVal) {
-            gpio_setLevel(GPIO_SDA, GPIO_HIGH);
-        } else {
-            gpio_setLevel(GPIO_SDA, GPIO_LOW);
-        }
-        myDelay();
-        gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-        myDelay();
-        dataCode <<= 1;
-    }
-}
-
-void i2c_sendAckNak(bool isAck)
-{
-    gpio_setLevel(GPIO_SCL, GPIO_LOW);
-    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
-    if (isAck) {
-        gpio_setLevel(GPIO_SDA, GPIO_LOW); // ACK
-    } else {
-        gpio_setLevel(GPIO_SDA, GPIO_HIGH); // NAK
-    }
-    myDelay();
-    gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-    myDelay();
-    gpio_setLevel(GPIO_SCL, GPIO_LOW);
-}
-
-bool i2c_isACK(void)
-{
-    bool pinIsH;
-
-    gpio_setLevel(GPIO_SCL, GPIO_LOW);
-    gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
-    myDelay();
-    gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-    pinIsH = gpio_isHigh(GPIO_SDA);
-    myDelay();
-
-    return (pinIsH == BOOL_ACK);
-}
-
-char i2c_readData(bool isLast)
-{
-    char code;
-    int loop;
-
-    gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
-
-    code = 0;
-    for (loop=0; loop<8; loop++) {
-        gpio_setLevel(GPIO_SCL, GPIO_LOW);
-        myDelay();
-        gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-        if (gpio_isHigh(GPIO_SDA)) {
-            code |= 0x01;
-        }
-        myDelay();
-        if (loop < (8-1)) { // other than last digit
-            code <<= 1;
-        }
-    }
-        
-    if (isLast) {
-        i2c_sendAckNak(/* isAck=*/false);
-    } else {
-        i2c_sendAckNak(/* isAck=*/true);
-    }
-    
-    return code;
-}
-
-void test_clockout_ioin(void)
-{
-    int loop;
-    int pinlvl; // pin level
-
-    // 1. output clock at [GPIO_SCL]
-    gpio_setExport(GPIO_SCL, /* bfOn=*/true);
-    gpio_setDirection(GPIO_SCL, /* bfOut=*/true);        
-    for(loop=0; loop<5; loop++) {
-        gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-        myDelay();
-        gpio_setLevel(GPIO_SCL, GPIO_LOW);
-        myDelay();
-    }
-    gpio_setExport(GPIO_SDA, /* bfOn=*/false);
-
-    // 2. read at [GPIO05]
-    gpio_setExport(5, /* bfOn=*/true);
-    pinlvl = gpio_isHigh(5);
-    printf("GPIO05:%d\n", pinlvl);
-    gpio_setExport(5, /* bfOn=*/false);	
 }
 
 int main(void)
