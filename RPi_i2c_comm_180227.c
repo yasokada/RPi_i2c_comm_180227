@@ -6,6 +6,7 @@
 
 /*
  * v0.8 Mar. 02, 2018
+ *   - i2c_setStartCondition() has [withInit] argument
  *   - add i2c_readData()
  *   - add i2c_sendAckNak()
  *   - fix bug > i2c_isACK() did not set direction inward
@@ -68,13 +69,18 @@ void i2c_teardown(void)
     gpio_setExport(GPIO_SCL, /* bfOn=*/false);
 }
 
-void i2c_setStartCondition(void)
+void i2c_setStartCondition(bool withInit)
 {
-    gpio_setLevel(GPIO_SDA, GPIO_HIGH);
-    gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-    myDelay();
-    myDelay();
-    myDelay();
+    // just in case
+    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
+	
+    if (withInit) {
+        gpio_setLevel(GPIO_SDA, GPIO_HIGH);
+        gpio_setLevel(GPIO_SCL, GPIO_HIGH);
+        myDelay();
+        myDelay();
+        myDelay();
+    }
     // start condition
     gpio_setLevel(GPIO_SDA, GPIO_LOW);
     myDelay();
@@ -84,6 +90,9 @@ void i2c_setStartCondition(void)
 
 void i2c_setStopCondition(void)
 {
+    // just in case
+    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
+	
     gpio_setLevel(GPIO_SCL, GPIO_LOW);
     gpio_setLevel(GPIO_SDA, GPIO_LOW);
     myDelay();
@@ -180,7 +189,7 @@ bool i2c_isACK(void)
     myDelay();
 
     // TODO: 0m > keep IN or set OUT
-    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
+    //gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
     return (pinlvl == BOOL_ACK);
 }
@@ -196,10 +205,11 @@ void i2c_readData(char *dstPtr, bool isLast)
 
     code = 0;
     for (loop=0; loop<8; loop++) {
-        gpio_setLevel(GPIO_SCL, GPIO_LOW);
+        // gpio_setLevel(GPIO_SCL, GPIO_LOW);
         if (loop == 0) {
             gpio_setDirection(GPIO_SDA, /* bfOut=*/false);
         }
+        gpio_setLevel(GPIO_SCL, GPIO_LOW);
         myDelay();
         gpio_setLevel(GPIO_SCL, GPIO_HIGH);
         if (gpio_getLevel()) { // High
@@ -252,7 +262,7 @@ int main()
 
     i2c_setup();
     // write header
-    i2c_setStartCondition();
+    i2c_setStartCondition(/* withInit=*/true);
     i2c_sendSlaveAddress(slvAdr, /*bfRead=*/false);
     if (i2c_isACK()) {
         printf("ACK\n");
@@ -266,19 +276,21 @@ int main()
     if (i2c_isACK()) {
         printf("ACK\n");
     };
-    
-    // repeated start condition
-    i2c_setStartCondition();
+
+    i2c_setStopCondition();
 
     // wait for measurement
     Wait_millisecond(15); // 15: arbitrary
 
     // read header
-    i2c_setStartCondition();
+    i2c_setStartCondition(/* withInit=*/false);
     i2c_sendSlaveAddress(slvAdr, /*bfRead=*/true);
+
     if (i2c_isACK()) {
         printf("ACK\n");
     };
+
+	//myDelay(); i2c_teardown(); exit(1); // DEBUG
     
     for(idx=0; idx<6; idx++) {
         i2c_readData(&vals[idx], /* isLast=*/(idx==5));
