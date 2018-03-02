@@ -262,7 +262,10 @@ int main(void)
 
     //test_clockout_ioin();
 
+    // 1. init
     i2c_setup();
+
+    // 2. start measurement
     // write header
     i2c_sendStartCondition(/* withInit=*/true);
     i2c_sendSlaveAddress(slvAdr, /*bfRead=*/false);
@@ -278,12 +281,12 @@ int main(void)
     if (i2c_isACK()) {
         printf("ACK\n");
     };
-
     i2c_sendStopCondition();
 
-    // wait for measurement
+    // 3. wait for measurement
     Wait_millisecond(15); // 15: arbitrary
 
+    // 4. obtain data
     // read header
     i2c_sendStartCondition(/* withInit=*/false);
     i2c_sendSlaveAddress(slvAdr, /*bfRead=*/true);
@@ -294,9 +297,9 @@ int main(void)
         i2c_readData(&vals[idx], /* isLast=*/(idx==5));
         printf("%d\n", vals[idx]);
     }
-
     i2c_sendStopCondition();
 
+    // 5. finish
     i2c_teardown();
 
     return 0;
