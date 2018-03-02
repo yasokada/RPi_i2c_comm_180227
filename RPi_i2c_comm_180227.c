@@ -5,6 +5,8 @@
 #include "wait_msec_nsec_180301.h"
 
 /*
+ * v0.8 Mar. 02, 2018
+ *   - fix bug > i2c_isACK() did not set direction inward
  * v0.7 Mar. 01, 2018
  *   - add i2c_sendData()
  *   - add i2c_isACK()
@@ -161,7 +163,7 @@ bool i2c_isACK(void)
     pinlvl = gpio_getLevel(GPIO_SDA);
     myDelay();
 
-    // TODO: 0m > change direction to OUT
+    gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
 
     return (pinlvl == BOOL_ACK);
 }
