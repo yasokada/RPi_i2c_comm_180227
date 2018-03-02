@@ -6,6 +6,7 @@
 
 /*
  * v0.8 Mar. 02, 2018
+ *   - fix bug > i2c_sendAckNak() was incorrect
  *   - fix bug > i2c_readData() > gpio_getLevel() had no arg
  *   - i2c_isACK() does not set GPIO_SDA direction outward
  *   - i2c_setStartCondition() has [withInit] argument
@@ -170,13 +171,16 @@ void i2c_sendAckNak(bool isAck)
     gpio_setLevel(GPIO_SCL, GPIO_LOW);
     gpio_setDirection(GPIO_SDA, /* bfOut=*/true);
     if (isAck) {
-        gpio_setLevel(GPIO_SCL, GPIO_LOW); // ACK
+		printf("ACK,");
+        gpio_setLevel(GPIO_SDA, GPIO_LOW); // ACK
     } else {
-        gpio_setLevel(GPIO_SCL, GPIO_HIGH); // NAK
+		printf("NAK,");
+        gpio_setLevel(GPIO_SDA, GPIO_HIGH); // NAK
     }
     myDelay();
-    gpio_setLevel(GPIO_SCL, GPIO_LOW);
+    gpio_setLevel(GPIO_SCL, GPIO_HIGH);
     myDelay();
+    gpio_setLevel(GPIO_SCL, GPIO_LOW);
 }
 
 bool i2c_isACK(void)
@@ -223,9 +227,9 @@ void i2c_readData(char *dstPtr, bool isLast)
     *dstPtr = code;
     
     if (isLast) {
-        i2c_sendAckNak(/* isAck=*/true);
-    } else {
         i2c_sendAckNak(/* isAck=*/false);
+    } else {
+        i2c_sendAckNak(/* isAck=*/true);
     }
 }
 
