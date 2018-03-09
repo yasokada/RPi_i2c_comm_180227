@@ -3,6 +3,9 @@
 
 #include <stdbool.h>
 
+#define GPIO_HIGH (true)
+#define GPIO_LOW (false)
+
 void i2c_gpio_initSDA(void);
 void i2c_gpio_initSCL(void);
 void i2c_gpio_setSDA_level(bool bfHigh);
