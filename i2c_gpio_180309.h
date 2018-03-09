@@ -6,6 +6,9 @@
 #define GPIO_HIGH (true)
 #define GPIO_LOW (false)
 
+#define GPIO_OUT (true)
+#define GPIO_IN (false)
+
 void i2c_gpio_initSDA(void);
 void i2c_gpio_initSCL(void);
 void i2c_gpio_setSDA_level(bool bfHigh);
