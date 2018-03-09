@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "i2c_comm_180302.h"
+#include "wait_msec_nsec_180301.h"
 
 /*
  * v1.0 Mar. 09, 2018
+ *   - include "wait_msec_nsec_180301.h"
  *   - rename [gpio_handle_180309] to [gpio_RPi_180309]
  *   - add [i2c_gpio_180309] to be used in [i2c_comm_180302]
  *     + to separate low level implementations for SDA, SCL
