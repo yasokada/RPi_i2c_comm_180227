@@ -22,10 +22,10 @@ static void myDelay(void)
 
 void i2c_Setup(void)
 {
-	i2c_gpio_initSCL();
-	i2c_gpio_initSDA();
-	i2c_gpio_setSCL_direction(/* bfOut=*/true);
-	i2c_gpio_setSDA_direction(/* bfOut=*/true);
+    i2c_gpio_initSCL();
+    i2c_gpio_initSDA();
+    i2c_gpio_setSCL_direction(/* bfOut=*/true);
+    i2c_gpio_setSDA_direction(/* bfOut=*/true);
 }
 
 void i2c_Teardown(void)
@@ -208,6 +208,6 @@ void test_clockout_ioin(void)
     gpio_setExport(5, true);
     pinlvl = gpio_isHigh(5);
     printf("GPIO05:%d\n", pinlvl);
-    gpio_setExport(5, false);	
+    gpio_setExport(5, false);
 }
 */
