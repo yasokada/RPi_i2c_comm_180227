@@ -4,6 +4,9 @@
 #include "i2c_comm_180302.h"
 
 /*
+ * v1.0 Mar. 09, 2018
+ *   - add [i2c_gpio_180309] to be used in [i2c_comm_180302]
+ *     + to separate low level implementations for SDA, SCL
  * v0.9 Mar. 02, 2018
  *   - remove myDelay()
  *   - move i2c_XXX() to [i2c_comm_180302.c]
