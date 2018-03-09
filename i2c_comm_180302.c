@@ -5,6 +5,7 @@
 
 /*
  * v0.2 2018/03/09
+ *   - remove test_clockout_ioin()
  *   - use [gpio_i2c_180309] functions
  *     + instead of [gpio_handle_180301]
  * v0.1 2018/03/02
@@ -184,30 +185,3 @@ char i2c_ReadData(bool isLast)
     
     return code;
 }
-
-// TODO: remove test_clockout_ioin()
-
-/*
-void test_clockout_ioin(void)
-{
-    int loop;
-    int pinlvl; // pin level
-
-    // 1. output clock at [GPIO_SCL]
-    gpio_setExport(GPIO_SCL, true);
-    gpio_setDirection(GPIO_SCL, true); // true=bfOut
-    for(loop=0; loop<5; loop++) {
-        gpio_setLevel(GPIO_SCL, GPIO_HIGH);
-        myDelay();
-        gpio_setLevel(GPIO_SCL, GPIO_LOW);
-        myDelay();
-    }
-    gpio_setExport(GPIO_SDA, false);
-
-    // 2. read at [GPIO05]
-    gpio_setExport(5, true);
-    pinlvl = gpio_isHigh(5);
-    printf("GPIO05:%d\n", pinlvl);
-    gpio_setExport(5, false);
-}
-*/
