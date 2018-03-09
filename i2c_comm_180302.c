@@ -5,6 +5,7 @@
 
 /*
  * v0.2 2018/03/09
+ *   - add [GPIO_OUT], [GPIO_IN]
  *   - remove test_clockout_ioin()
  *   - use [gpio_i2c_180309] functions
  *     + instead of [gpio_handle_180301]
@@ -25,21 +26,21 @@ void i2c_Setup(void)
 {
     i2c_gpio_initSCL();
     i2c_gpio_initSDA();
-    i2c_gpio_setSCL_direction(/* bfOut=*/true);
-    i2c_gpio_setSDA_direction(/* bfOut=*/true);
+    i2c_gpio_setSCL_direction(GPIO_OUT);
+    i2c_gpio_setSDA_direction(GPIO_OUT);
 }
 
 void i2c_Teardown(void)
 {
-    i2c_gpio_setSDA_direction(/* bfOut=*/false);
-    i2c_gpio_setSCL_direction(/* bfOut=*/false);
+    i2c_gpio_setSDA_direction(GPIO_IN);
+    i2c_gpio_setSCL_direction(GPIO_IN);
     i2c_gpio_terminateSDA();
     i2c_gpio_terminateSCL();
 }
 
 void i2c_SendStartCondition(bool withInit)
 {
-    i2c_gpio_setSDA_direction(/* bfOut=*/true);
+    i2c_gpio_setSDA_direction(GPIO_OUT);
 
     if (withInit) {
         i2c_gpio_setSDA_level(GPIO_HIGH);
@@ -57,7 +58,7 @@ void i2c_SendStartCondition(bool withInit)
 
 void i2c_SendStopCondition(void)
 {
-    i2c_gpio_setSDA_direction(/* bfOut=*/true);
+    i2c_gpio_setSDA_direction(GPIO_OUT);
 
     i2c_gpio_setSCL_level(GPIO_LOW);
     i2c_gpio_setSDA_level(GPIO_LOW);
@@ -76,7 +77,7 @@ void i2c_SendSlaveAddress(int address_7bit, bool bfRead)
 
     slvAdr = address_7bit;
 
-    i2c_gpio_setSDA_direction(/* bfOut=*/true);
+    i2c_gpio_setSDA_direction(GPIO_OUT);
 
     // 1. slave address
     for(loop=0; loop<7; loop++) { // 7bit
@@ -110,7 +111,7 @@ void i2c_SendData(char dataCode)
     int loop;
     bool bitVal;
 
-    i2c_gpio_setSDA_direction(/* bfOut=*/true);
+    i2c_gpio_setSDA_direction(GPIO_OUT);
 
     for(loop=0; loop<8; loop++) { // 8bit
         bitVal = (dataCode & 0x80);
@@ -130,7 +131,7 @@ void i2c_SendData(char dataCode)
 void i2c_SendAckNak(bool isAck)
 {
     i2c_gpio_setSCL_level(GPIO_LOW);
-    i2c_gpio_setSDA_direction(/* bfOut=*/true);
+    i2c_gpio_setSDA_direction(GPIO_OUT);
     if (isAck) {
         i2c_gpio_setSDA_level(GPIO_LOW);  // ACK
     } else {
@@ -147,7 +148,7 @@ bool i2c_IsACK(void)
     bool pinIsH;
 
     i2c_gpio_setSCL_level(GPIO_LOW);
-    i2c_gpio_setSDA_direction(/* bfOut=*/false);
+    i2c_gpio_setSDA_direction(GPIO_IN);
     myDelay();
     i2c_gpio_setSCL_level(GPIO_HIGH);
     pinIsH = i2c_gpio_isSDA_high();
@@ -161,7 +162,7 @@ char i2c_ReadData(bool isLast)
     char code;
     int loop;
 
-    i2c_gpio_setSDA_direction(/* bfOut=*/false);
+    i2c_gpio_setSDA_direction(GPIO_IN);
 
     code = 0;
     for (loop=0; loop<8; loop++) {
@@ -178,9 +179,9 @@ char i2c_ReadData(bool isLast)
     }
         
     if (isLast) {
-        i2c_SendAckNak(/* isAck=*/false);
+        i2c_SendAckNak(BOOL_ACK);
     } else {
-        i2c_SendAckNak(/* isAck=*/true);
+        i2c_SendAckNak(BOOL_NAK);
     }
     
     return code;
