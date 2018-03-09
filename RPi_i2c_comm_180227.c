@@ -5,6 +5,7 @@
 
 /*
  * v1.0 Mar. 09, 2018
+ *   - rename [gpio_handle_180309] to [gpio_RPi_180309]
  *   - add [i2c_gpio_180309] to be used in [i2c_comm_180302]
  *     + to separate low level implementations for SDA, SCL
  * v0.9 Mar. 02, 2018

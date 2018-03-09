@@ -8,7 +8,7 @@
  *   - add [GPIO_OUT], [GPIO_IN]
  *   - remove test_clockout_ioin()
  *   - use [gpio_i2c_180309] functions
- *     + instead of [gpio_handle_180301]
+ *     + instead of [gpio_RPi_180301]
  * v0.1 2018/03/02
  *   - has myDelay()
  *   - has i2c_XXX() moved from other source file
