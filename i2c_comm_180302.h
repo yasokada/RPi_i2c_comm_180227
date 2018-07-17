@@ -9,7 +9,7 @@ void i2c_SendSlaveAddress(int address_7bit, bool bfRead);
 void i2c_SendData(char dataCode);
 void i2c_SendAckNak(bool isAck);
 bool i2c_IsACK(void);
-bool i2c_clockStretching_IsACK(void);
+bool i2c_clockStretching_IsACK(int maxloop);
 char i2c_ReadData(bool isLast);
 
 #endif

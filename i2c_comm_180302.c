@@ -159,9 +159,10 @@ bool i2c_IsACK(void)
     return (pinIsH == BOOL_ACK);
 }
 
-bool i2c_clockStretching_IsACK(void)
+bool i2c_clockStretching_IsACK(int maxloop)
 {
     bool pinIsH;
+    int cnt=0;
 
     i2c_gpio_setSCL_level(GPIO_LOW);
     i2c_gpio_setSDA_direction(GPIO_IN);
@@ -171,18 +172,25 @@ bool i2c_clockStretching_IsACK(void)
 	// { clock streching
     i2c_gpio_setSCL_direction(GPIO_IN);
 	myDelay();
-	// TODO: 0m > set maximum loop
 	while(true) {
 		if(i2c_gpio_isSCL_high()) {
 			break;
 		}
+		if(cnt > maxloop) {
+			i2c_gpio_setSCL_direction(GPIO_OUT);  // end clock stretching
+			return false;
+		}
 		myDelay();
+		cnt++;
 	}
-    i2c_gpio_setSCL_direction(GPIO_OUT);
-	// } clock streching    
+	// } clock streching
     
     pinIsH = i2c_gpio_isSDA_high();
     myDelay();
+
+    // set after reading SDA
+    // (will fail to get ACK when set before reading SDA)
+    i2c_gpio_setSCL_direction(GPIO_OUT);  // end clock stretching
 
     return (pinIsH == BOOL_ACK);	
 }
