@@ -4,6 +4,8 @@
 #include "i2c_gpio_180309.h"
 
 /*
+ * v0.3 2018/07/17
+ *   - add i2c_clockStretching_IsACK()
  * v0.2 2018/03/09
  *   - add [GPIO_OUT], [GPIO_IN]
  *   - remove test_clockout_ioin()
@@ -155,6 +157,34 @@ bool i2c_IsACK(void)
     myDelay();
 
     return (pinIsH == BOOL_ACK);
+}
+
+bool i2c_clockStretching_IsACK(void)
+{
+    bool pinIsH;
+
+    i2c_gpio_setSCL_level(GPIO_LOW);
+    i2c_gpio_setSDA_direction(GPIO_IN);
+    myDelay();
+    i2c_gpio_setSCL_level(GPIO_HIGH);
+
+	// { clock streching
+    i2c_gpio_setSCL_direction(GPIO_IN);
+	myDelay();
+	// TODO: 0m > set maximum loop
+	while(true) {
+		if(i2c_gpio_isSCL_high()) {
+			break;
+		}
+		myDelay();
+	}
+    i2c_gpio_setSCL_direction(GPIO_OUT);
+	// } clock streching    
+    
+    pinIsH = i2c_gpio_isSDA_high();
+    myDelay();
+
+    return (pinIsH == BOOL_ACK);	
 }
 
 char i2c_ReadData(bool isLast)
