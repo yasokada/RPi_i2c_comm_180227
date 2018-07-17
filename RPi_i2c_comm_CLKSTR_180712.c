@@ -4,17 +4,11 @@
 #include "i2c_comm_180302.h"
 #include "wait_msec_nsec_180301.h"
 
-#include "i2c_gpio_180309.h"
-
-#define USE_INOUT_CHANGE // 2018/07/17 for debug
-#define ADD_WAIT // 2018/07/17 for debug
-
 /* 
- * v1.2 Jul. 17, 2018
+ * v1.1 Jul. 17, 2018
  *   - remove wait_clock_stretching_release()
  *   - add Test_sendCommand()
  *   - add send_stopContinuousMeasurement()
- * v1.1 Jul. 12, 2018
  *   - add wait_clock_stretching_release()
  *   - change commands for different slave device
  *   - change address for different slave device (0x44 -> 0x61)
@@ -77,6 +71,8 @@ void wait_clock_stretching_release(void);
 static void Test_sendCommand(int slvAdr);
 static void send_stopContinuousMeasurement(int slvAdr);
 
+static const int kMaxloop_SCL_stretch=1000; // maximum loop to check SCL=LOW
+
 int main(void)
 {
     int slvAdr = 0x61; // Slave address
@@ -122,32 +118,32 @@ static void Test_sendCommand(int slvAdr)
     // write header
     i2c_SendStartCondition(/* withInit=*/true);
     i2c_SendSlaveAddress(slvAdr, /*bfRead=*/false);
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
     // send command
     i2c_SendData(0x46); // 0x46: arbitrary
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
     i2c_SendData(0x00); // 0x00: arbitrary
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
     i2c_SendData(0x00); // 0x00: arbitrary
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
     i2c_SendData(0x02); // 0x02: arbitrary
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
     i2c_SendData(0xE3); // 0xE3: CRC
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
@@ -159,42 +155,42 @@ static void send_stopContinuousMeasurement(int slvAdr)
     // write header
     i2c_SendStartCondition(/* withInit=*/true);
     i2c_SendSlaveAddress(slvAdr, /*bfRead=*/false);
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
     // send command
     i2c_SendData(0x06); // Function Code
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
     i2c_SendData(0x00); // Address MSB
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
     i2c_SendData(0x37); // Address LSB
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
     i2c_SendData(0x00); // Content MSB
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
     i2c_SendData(0x01); // Content LSB
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
     i2c_SendData(0xF0); // CRC LSB
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
     i2c_SendData(0x64); // CRC MSB
-    if (i2c_clockStretching_IsACK()) {
+    if (i2c_clockStretching_IsACK(kMaxloop_SCL_stretch)) {
         printf("ACK\n");
     };
 
